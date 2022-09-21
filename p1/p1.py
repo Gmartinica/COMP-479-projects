@@ -5,14 +5,16 @@ from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 
 
-def make_directory(path):
+def make_directory(path: str):
+    """Makes directory with the given path. Name included in path"""
     try:
         os.makedirs(path, exist_ok=True)  # Make directory for new files
     except OSError:
         print("ERROR MAKING DIRECTORY " + path)
 
 
-def get_raw_content(path):
+def get_raw_content(path: str) -> str:
+    """Gets the raw text of a file"""
     raw = 'Foo'
     try:
         f = open(path)
@@ -23,11 +25,11 @@ def get_raw_content(path):
     return raw
 
 
-def read_files(path, last_index):
-    """Reads sgm files from a given directory and writes """
+def read_files(path: str, last_index: int) -> dict:
+    """Reads sgm files from a given directory and removes metadata. Returns a dict with the form
+    {document: text}"""
     file_list = [file for file in os.listdir(path) if file.endswith(".sgm")]
     file_list.sort()  # For indexing the first 5 documents
-    print(file_list)
     testing_file_list = file_list[:last_index]  # Getting first 5 documents
 
     directory = "step1files"
@@ -48,7 +50,8 @@ def read_files(path, last_index):
     return docs
 
 
-def tokenize(docs):
+def tokenize(docs: dict) -> dict:
+    """Given a dict with {document: text}, tokenizes each element"""
     directory = "step2files"
     make_directory(directory)
     for filename in docs:
@@ -61,7 +64,8 @@ def tokenize(docs):
     return docs
 
 
-def make_lowercase(docs):
+def make_lowercase(docs: dict) -> dict:
+    """Given a dict with {document: text}, makes all values of the dict lowercase"""
     directory = "step3files"
     make_directory(directory)
     for filename in docs:
@@ -75,7 +79,8 @@ def make_lowercase(docs):
     return docs
 
 
-def apply_porter_stemmer(docs):
+def apply_porter_stemmer(docs: dict) -> dict:
+    """Given a dict with {document: text}, apply Porter Stemmer algorithm"""
     directory = "step4files"
     make_directory(directory)
 
@@ -90,7 +95,8 @@ def apply_porter_stemmer(docs):
     return docs
 
 
-def remove_stop_words(docs, word_list):
+def remove_stop_words(docs: dict, word_list: list) -> dict:
+    """Given a dict with {document: text} and a list of stop words, remove the stop words from text"""
     directory = "step5files"
     make_directory(directory)
     for filename in docs:
@@ -103,11 +109,14 @@ def remove_stop_words(docs, word_list):
 
 
 def main():
-    docs = read_files('./reuters21578', 5)
+    path = "./reuters21578"
+    last_index = 5
+    stop_words_list = stopwords.words('english')
+    docs = read_files(path, last_index)
     docs = tokenize(docs)
     docs = make_lowercase(docs)
     docs = apply_porter_stemmer(docs)
-    docs = remove_stop_words(docs, stopwords.words('english'))
+    docs = remove_stop_words(docs, stop_words_list)
 
 
 if __name__ == "__main__":
