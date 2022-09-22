@@ -13,16 +13,30 @@ def make_directory(path: str):
         print("ERROR MAKING DIRECTORY " + path)
 
 
-def get_raw_content(path: str) -> str:
-    """Gets the raw text of a file"""
-    raw = 'Foo'
+def get_text_content(path: str) -> str:
+    """Gets the text of each article. Reads file line by line up until <BODY> tag found, appends all the contents of the
+    article's body up until it finds the word 'reuter' which is used to end each article. Does this until EOF"""
+    text = ''
+    currently_searching = True
     try:
-        f = open(path)
-        raw = f.read()  # raw text
-        f.close()
+        with open(path, 'rt') as file:
+            for line in file:
+                if currently_searching:
+                    line_index = line.find("<BODY>")
+                    body_found = True if line_index > -1 else False  # True if body tag found
+                    if body_found:
+                        currently_searching = False
+                        text_to_add = line[line_index + 6:]
+                        text += text_to_add
+                else:
+                    if line.lower().find(" reuter") > -1:
+                        currently_searching = True
+                    else:
+                        text += line
+        file.close()
     except IOError:
         print("Error: File does not exist")
-    return raw
+    return text
 
 
 def read_files(path: str, last_index: int) -> dict:
@@ -37,8 +51,7 @@ def read_files(path: str, last_index: int) -> dict:
 
     docs = {}
     for filename in testing_file_list:
-        raw = get_raw_content(path + '/' + filename)
-        text = re.sub(r'&(.*?)\s|<(.*?)>', '', raw)  # Remove metadata tags and HTML entities
+        text = get_text_content(path + '/' + filename)
         docs[filename] = text
         try:
             # Write output to new file
