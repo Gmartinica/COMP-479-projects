@@ -67,12 +67,18 @@ def tokenize(docs: dict) -> dict:
     """Given a dict with {document: text}, tokenizes each element"""
     directory = "step2files"
     make_directory(directory)
+    punctuation_list = [*".,:;-<>{}()[]~`"]
+    double_symbols = ['""', "''", "``", "..."]
+    punctuation_list += double_symbols
     for filename in docs:
         docs[filename] = word_tokenize(docs[filename])
         # Write output to new file
         new_file = open(directory + '/' + "altered-" + filename, "w")
         for word in docs[filename]:
-            new_file.write(word + '\n')
+            if word in punctuation_list:
+                docs[filename].remove(word)
+            else:
+                new_file.write(word + '\n')
         new_file.close()
     return docs
 
