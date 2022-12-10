@@ -15,7 +15,6 @@ class Scraper:
             os.makedirs(dir_path)
         for file in self.file_list:
             if not file.startswith('.'):
-                print(file)
                 filename = self.path + "/" + file
                 html = open(filename, "r")
                 # Get text in #content-main

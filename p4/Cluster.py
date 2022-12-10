@@ -18,7 +18,7 @@ class Cluster:
         self.afinn = Afinn()
 
     def vectorize(self):
-        return self.vectorizer.fit_transform(self.file_list[:6])  # Change to how many docs you want to vectorize
+        return self.vectorizer.fit_transform(self.file_list)
 
     def find_afinn_score(self, str):
         return self.afinn.score(str)
@@ -35,9 +35,9 @@ class Cluster:
         for i in range(number_of_clusters):
             words = [terms[ind] for ind in order_centroids[i, :]]
             afinn_score = self.find_afinn_score(' '.join(words[:50]))
-            out.write(f"Cluster {i}: AFINN score: {afinn_score} {words[:20]}\n")
+            out.write(f"Cluster {i}: AFINN score: {afinn_score} Top 20 terms: {words[:20]}\n")
         results = pd.DataFrame({
-            'text': self.file_list[:6],
+            'text': self.file_list,
             'category': km.labels_
         })
         out.write(results.to_string())
